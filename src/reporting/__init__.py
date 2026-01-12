@@ -1,0 +1,4 @@
+"""Reporting Package Initialization"""
+from src.reporting.generator import ReportGenerator
+
+__all__ = ['ReportGenerator']
