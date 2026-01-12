@@ -2,7 +2,7 @@
 
 **Automated Threat Intelligence Aggregator**
 
-ThreatFusion is a powerful command-line tool that enriches threat indicators (hashes, IPs, domains) with intelligence from multiple security sources including VirusTotal, Shodan, Censys, OTX, and AbuseIPDB.
+ThreatFusion is a powerful threat intelligence tool that enriches indicators (hashes, IPs, domains) with intelligence from multiple security sources including VirusTotal, Shodan, Censys, OTX, and AbuseIPDB.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -11,9 +11,11 @@ ThreatFusion is a powerful command-line tool that enriches threat indicators (ha
 
 ## ✨ Features
 
+- **🌐 Modern Web Dashboard**: Beautiful dark-themed UI with real-time analysis
+- **⌨️ CLI Interface**: Powerful command-line tool for automation
 - **Multi-Source Intelligence**: Aggregate data from 5+ threat intelligence APIs
 - **Parallel Processing**: Query all sources simultaneously for fast results
-- **Risk Scoring**: Automatic risk calculation based on consensus from multiple sources
+- **Risk Scoring**: Automatic risk calculation with visual gauge
 - **Multiple Output Formats**: Text, JSON, and HTML reports
 - **Private IP Detection**: Warns when querying private/RFC1918 addresses
 - **Rate Limiting**: Built-in rate limiting to respect API quotas
@@ -118,7 +120,36 @@ Register for free API keys at these providers:
 
 ---
 
-## 💻 Usage
+## 🌐 Web Dashboard
+
+The modern web interface provides a visual way to analyze threat indicators.
+
+### Starting the Dashboard
+
+**Terminal 1 - Start the API Server:**
+```bash
+poetry run uvicorn api.main:app --reload --port 8000
+```
+
+**Terminal 2 - Start the Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+**Open in Browser:** Navigate to `http://localhost:5173`
+
+### Dashboard Features
+
+- **Search Bar**: Enter IPs, domains, or file hashes
+- **Risk Gauge**: Visual risk score from 0-10
+- **Tabbed Results**: View results from each source (VirusTotal, Shodan, etc.)
+- **Export**: Download reports as JSON or HTML
+- **Config Status**: Check which API services are configured
+
+---
+
+## ⌨️ CLI Usage
 
 ### Basic Commands
 
