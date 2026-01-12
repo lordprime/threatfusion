@@ -28,5 +28,9 @@ htmlcov/
 
 # ThreatFusion specific
 threatfusion_cache.db
+threatfusion_report_*.html
 reports/
 *.log
+
+# Poetry
+poetry.lock

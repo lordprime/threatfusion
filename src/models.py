@@ -25,9 +25,6 @@ class Indicator(BaseModel):
     value: str = Field(..., description="Indicator value")
     type: IndicatorType = Field(..., description="Indicator type")
     is_private: bool = Field(default=False, description="Private/RFC1918 IP")
-    
-    class Config:
-        use_enum_values = True
 
 
 class EnrichmentResult(BaseModel):

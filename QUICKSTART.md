@@ -1,106 +1,215 @@
 # 🚀 ThreatFusion Quick Start Guide
 
-## Get Up and Running in 5 Minutes
+Get up and running with ThreatFusion in **5 minutes**.
 
-### Step 1: Navigate to Project
+---
+
+## Step 1: Install Poetry
+
+Poetry is required to manage dependencies. If you don't have it:
+
 ```bash
-cd d:\OSINT\threatfusion
+# Linux/WSL/macOS
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Windows PowerShell
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 ```
 
-### Step 2: Install Dependencies
+Verify:
 ```bash
-# Install Poetry (if not installed)
-pip install poetry
+poetry --version
+```
 
-# Install project dependencies
+---
+
+## Step 2: Install ThreatFusion
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/threatfusion.git
+cd threatfusion
+
+# Install all dependencies
 poetry install
 ```
 
-### Step 3: Configure API Keys
+> **Why Poetry?** Modern Linux/WSL systems block `pip install` globally. Poetry creates an isolated environment automatically.
 
-Copy the example configuration:
+---
+
+## Step 3: Configure API Keys
+
 ```bash
-copy .env.example .env
+# Copy example config
+cp .env.example .env
+
+# Edit with your API keys
+nano .env
 ```
 
-Edit `.env` and add your API keys:
+Add at least **one** API key:
 ```ini
-VT_API_KEY=your_virustotal_api_key_here
-SHODAN_API_KEY=your_shodan_api_key_here
-CENSYS_API_ID=your_censys_id_here
-CENSYS_API_SECRET=your_censys_secret_here
-OTX_API_KEY=your_otx_api_key_here
-ABUSEIPDB_API_KEY=your_abuseipdb_api_key_here
+VT_API_KEY=your_key_here
+SHODAN_API_KEY=your_key_here
+# ... add more as needed
 ```
 
-> **Where to get API keys?** See [README.md](file:///d:/OSINT/threatfusion/README.md) for registration links
+> **Note:** Files starting with `.` are hidden. Use `ls -a` to see them.
 
-### Step 4: Verify Setup
+### Where to get API keys?
+
+| Service | Link |
+|---------|------|
+| VirusTotal | [virustotal.com/gui/join-us](https://www.virustotal.com/gui/join-us) |
+| Shodan | [account.shodan.io/register](https://account.shodan.io/register) |
+| Censys | [censys.io/register](https://censys.io/register) |
+| OTX | [otx.alienvault.com/api](https://otx.alienvault.com/api) |
+| AbuseIPDB | [abuseipdb.com/register](https://www.abuseipdb.com/register) |
+
+---
+
+## Step 4: Verify Setup
+
 ```bash
-poetry run python src/main.py config-check
+poetry run threatfusion config-check
 ```
 
-### Step 5: Run Your First Query
-```bash
-# Test with EICAR test file hash
-poetry run python src/main.py enrich 44d88612fea8a8f36de82e1278abb02f
+**Expected output:**
+```
+┌─────────────────────────────────────┐
+│  API Services Status                │
+├─────────────────────────────────────┤
+│ VIRUSTOTAL    ✓ Configured  Ready   │
+│ SHODAN        ✓ Configured  Ready   │
+└─────────────────────────────────────┘
 
-# Or test with an IP
-poetry run python src/main.py enrich 8.8.8.8
-
-# Or test with a domain
-poetry run python src/main.py enrich example.com
+Summary: 2/5 services configured
 ```
 
-## Commands Reference
+---
+
+## Step 5: Run Your First Query
 
 ```bash
-# Basic enrichment (text output)
-poetry run python src/main.py enrich <indicator>
+# Test with Google DNS IP
+poetry run threatfusion enrich 8.8.8.8
+```
+
+**You should see:**
+1. ✅ Indicator validation
+2. ✅ Agent initialization
+3. ⏳ Parallel querying (5-30 seconds)
+4. 📊 Risk score and results
+
+---
+
+## Quick Command Reference
+
+```bash
+# Enrich indicators
+poetry run threatfusion enrich <HASH|IP|DOMAIN>
 
 # JSON output
-poetry run python src/main.py enrich <indicator> --output json
+poetry run threatfusion enrich 8.8.8.8 --output json
 
-# HTML report (auto-saved)
-poetry run python src/main.py enrich <indicator> --output html
+# HTML report
+poetry run threatfusion enrich malware.com --output html
 
-# Check configuration
-poetry run python src/main.py config-check
+# Save to file
+poetry run threatfusion enrich <indicator> --save output.txt
 
-# Show version
-poetry run python src/main.py version
+# Configuration check
+poetry run threatfusion config-check
+
+# Version info
+poetry run threatfusion version
 ```
 
-## What to Expect
+---
 
-**Execution flow:**
-1. Indicator validation (type detection)
-2. Agent initialization (based on configured keys)
-3. Parallel querying (5+ sources simultaneously)
-4. Risk score calculation (0-10 scale)
-5. Report generation (formatted output)
+## Example Queries
 
-⏱️ **Total time:** <30 seconds for most queries
+```bash
+# IP address
+poetry run threatfusion enrich 1.1.1.1
 
-## Troubleshooting
+# Domain
+poetry run threatfusion enrich example.com
 
-**Issue: "No API keys configured"**
-- Solution: Set up your `.env` file with API keys
+# MD5 hash (EICAR test file)
+poetry run threatfusion enrich 44d88612fea8a8f36de82e1278abb02f
 
-**Issue: Rate limit errors**
-- Solution: Some free tiers have daily limits (wait 24hrs or upgrade)
+# SHA256 hash
+poetry run threatfusion enrich 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
+```
 
-**Issue: Import errors**
-- Solution: Run `poetry install` to ensure all dependencies are installed
+---
 
-## Next Steps
+## ⚠️ Common Issues
 
-✅ **You're now ready to:**
-- Query malware hashes, IPs, and domains
-- Generate HTML reports for sharing
-- Integrate into your security workflows
+### "No module named 'click'"
+```bash
+# Solution: Install dependencies first
+poetry install
+```
 
-📖 **Read More:**
-- [README.md](file:///d:/OSINT/threatfusion/README.md) - Full documentation
-- [THREATFUSION_TECHNICAL_SETUP.md](file:///C:/Users/Abhi1/.gemini/antigravity/brain/3886f921-192e-4ddd-a08b-043709f6504d/THREATFUSION_TECHNICAL_SETUP.md) - Detailed setup
-- [walkthrough.md](file:///C:/Users/Abhi1/.gemini/antigravity/brain/3886f921-192e-4ddd-a08b-043709f6504d/walkthrough.md) - Project overview
+### "ModuleNotFoundError: No module named 'src'"
+```bash
+# Solution: Always use 'poetry run'
+poetry run threatfusion enrich 8.8.8.8
+```
+
+### "externally-managed-environment"
+```bash
+# Solution: DON'T use pip, use Poetry
+poetry install  # ✅ Correct
+pip install -r requirements.txt  # ❌ Wrong on Linux/WSL
+```
+
+### Can't see `.env` file
+```bash
+# Solution: Show hidden files
+ls -a
+```
+
+For more troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
+---
+
+## What's Next?
+
+- **Read the full docs**: [README.md](README.md)
+- **Understand the architecture**: Check `src/` folder structure
+- **Run tests**: `poetry run pytest tests/`
+- **Customize configuration**: Edit `.env` file parameters
+
+---
+
+## Pro Tips
+
+💡 **Create an alias** for easier usage:
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+alias tf='poetry run threatfusion'
+
+# Now you can just type:
+tf enrich 8.8.8.8
+```
+
+💡 **Enter Poetry shell** for multiple commands:
+```bash
+poetry shell
+# Now run without 'poetry run' prefix:
+threatfusion enrich 8.8.8.8
+threatfusion config-check
+```
+
+💡 **Batch analysis** (coming soon):
+```bash
+poetry run threatfusion batch indicators.txt
+```
+
+---
+
+**Need Help?** Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or open an issue on GitHub!

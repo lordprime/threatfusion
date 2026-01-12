@@ -1,133 +1,165 @@
-# 🚨 ThreatFusion
+# 🔍 ThreatFusion
 
 **Automated Threat Intelligence Aggregator**
 
-Quickly enrich malware hashes, IPs, and domains with intelligence from multiple sources in under 30 seconds.
+ThreatFusion is a powerful command-line tool that enriches threat indicators (hashes, IPs, domains) with intelligence from multiple security sources including VirusTotal, Shodan, Censys, OTX, and AbuseIPDB.
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
----
-
-## 🎯 What is ThreatFusion?
-
-ThreatFusion is a command-line tool that automates the tedious process of manually querying multiple threat intelligence platforms. Instead of spending 15+ minutes visiting VirusTotal, Shodan, Censys, and other services separately, get complete intelligence in one command.
-
-**Before ThreatFusion:**
-```
-1. Visit VirusTotal → Search → Wait
-2. Visit Shodan → Search → Wait
-3. Visit Censys → Search → Wait
-4. Visit AlienVault OTX → Search → Wait
-⏱️ Total: 15-30 minutes
-```
-
-**With ThreatFusion:**
-```bash
-$ threatfusion enrich abc123def456
-✅ Complete intelligence in <30 seconds
-```
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
 ## ✨ Features
 
-- ⚡ **Parallel Queries**: Query 5+ APIs simultaneously
-- 🎯 **Smart Detection**: Automatically detects indicator type (hash, IP, domain)
-- 📊 **Risk Scoring**: Unified 0-10 risk score from all sources
-- 📝 **Multiple Formats**: Text, JSON, and HTML reports
-- 🔒 **Rate Limiting**: Built-in rate limiting for free tier APIs
-- 🚦 **Progress Tracking**: Real-time progress indicators
-- 🎨 **Beautiful Output**: Rich terminal formatting
+- **Multi-Source Intelligence**: Aggregate data from 5+ threat intelligence APIs
+- **Parallel Processing**: Query all sources simultaneously for fast results
+- **Risk Scoring**: Automatic risk calculation based on consensus from multiple sources
+- **Multiple Output Formats**: Text, JSON, and HTML reports
+- **Private IP Detection**: Warns when querying private/RFC1918 addresses
+- **Rate Limiting**: Built-in rate limiting to respect API quotas
 
 ---
 
-## 📦 Installation
+## 📋 Prerequisites
 
-### Prerequisites
+- **Python 3.11 or higher**
+- **Poetry** (Python dependency manager)
+- **API Keys** from at least one threat intelligence provider (see [API Keys](#-api-keys) section)
 
-- Python 3.11 or higher
-- Poetry (recommended) or pip
+---
 
-### Quick Start
+## 🚀 Installation
+
+### Step 1: Install Poetry
+
+If you don't have Poetry installed:
 
 ```bash
-# Clone repository
+# Linux/WSL/macOS
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Windows (PowerShell)
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+```
+
+Verify installation:
+```bash
+poetry --version
+```
+
+### Step 2: Clone the Repository
+
+```bash
 git clone https://github.com/yourusername/threatfusion.git
 cd threatfusion
+```
 
-# Install dependencies with Poetry
+### Step 3: Install Dependencies
+
+```bash
+# Install all required packages
 poetry install
 
-# Or with pip
-pip install -r requirements.txt
-
-# Configure API keys
-cp .env.example .env
-# Edit .env and add your API keys
+# This creates a virtual environment and installs:
+# - click (CLI framework)
+# - pydantic (data validation)
+# - requests (HTTP client)
+# - rich (terminal formatting)
+# - jinja2, weasyprint (report generation)
 ```
+
+> [!IMPORTANT]
+> **DO NOT** use `pip install -r requirements.txt` on Linux/WSL - you'll get an `externally-managed-environment` error. Always use `poetry install`.
+
+### Step 4: Configure API Keys
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your API keys
+nano .env  # or use any text editor
+```
+
+Example `.env` configuration:
+```ini
+VT_API_KEY=your_virustotal_api_key_here
+SHODAN_API_KEY=your_shodan_api_key_here
+CENSYS_API_ID=your_censys_id_here
+CENSYS_API_SECRET=your_censys_secret_here
+OTX_API_KEY=your_otx_api_key_here
+ABUSEIPDB_API_KEY=your_abuseipdb_api_key_here
+```
+
+> [!TIP]
+> You only need **at least one** API key to get started. More keys = more comprehensive results.
+
+### Step 5: Verify Setup
+
+```bash
+poetry run threatfusion config-check
+```
+
+You should see a table showing which API services are configured.
 
 ---
 
 ## 🔑 API Keys
 
-ThreatFusion requires API keys from threat intelligence services. All services offer free tiers:
+Register for free API keys at these providers:
 
-| Service | Free Tier | Sign Up |
-|---------|-----------|---------|
-| **VirusTotal** | 500 requests/day | [virustotal.com](https://www.virustotal.com) |
-| **Shodan** | 100 queries/month | [shodan.io](https://www.shodan.io) |
-| **Censys** | 250 queries/month | [censys.io](https://search.censys.io) |
-| **AlienVault OTX** | Unlimited | [otx.alienvault.com](https://otx.alienvault.com) |
-| **AbuseIPDB** | 1,000 checks/day | [abuseipdb.com](https://www.abuseipdb.com) |
-
-### Configuration
-
-Edit `.env` file:
-```bash
-VT_API_KEY=your_virustotal_api_key
-SHODAN_API_KEY=your_shodan_api_key
-CENSYS_API_ID=your_censys_id
-CENSYS_API_SECRET=your_censys_secret
-OTX_API_KEY=your_otx_api_key
-ABUSEIPDB_API_KEY=your_abuseipdb_api_key
-```
+| Provider | Free Tier | Registration Link |
+|----------|-----------|-------------------|
+| **VirusTotal** | 500 requests/day | [virustotal.com/gui/join-us](https://www.virustotal.com/gui/join-us) |
+| **Shodan** | 100 results/month | [account.shodan.io/register](https://account.shodan.io/register) |
+| **Censys** | 250 queries/month | [censys.io/register](https://censys.io/register) |
+| **AlienVault OTX** | Unlimited (with registration) | [otx.alienvault.com/api](https://otx.alienvault.com/api) |
+| **AbuseIPDB** | 1,000 checks/day | [abuseipdb.com/register](https://www.abuseipdb.com/register) |
 
 ---
 
 ## 💻 Usage
 
-### Basic Enrichment
+### Basic Commands
 
 ```bash
-# Enrich a malware hash
-threatfusion enrich d131dd02c5e6eec4693d61a8d9ca3759
-
 # Enrich an IP address
-threatfusion enrich 192.168.1.1
+poetry run threatfusion enrich 8.8.8.8
 
 # Enrich a domain
-threatfusion enrich malicious-domain.com
+poetry run threatfusion enrich malware.com
+
+# Enrich a file hash (MD5/SHA1/SHA256)
+poetry run threatfusion enrich 44d88612fea8a8f36de82e1278abb02f
 ```
 
 ### Output Formats
 
 ```bash
+# Default: Rich terminal output with colors
+poetry run threatfusion enrich 8.8.8.8
+
 # JSON output
-threatfusion enrich 8.8.8.8 --output json
+poetry run threatfusion enrich 8.8.8.8 --output json
 
-# HTML report
-threatfusion enrich malware.com --output html
-
-# Save to file
-threatfusion enrich abc123 --save report.html
+# HTML report (auto-saved)
+poetry run threatfusion enrich 8.8.8.8 --output html
 ```
 
-### Configuration Check
+### Advanced Options
 
 ```bash
-# Check which API keys are configured
-threatfusion config-check
+# Save report to specific file
+poetry run threatfusion enrich 8.8.8.8 --save report.json
+
+# Increase timeout for slow connections
+poetry run threatfusion enrich malware.com --timeout 60
+
+# Check configuration
+poetry run threatfusion config-check
+
+# Show version info
+poetry run threatfusion version
 ```
 
 ---
@@ -135,153 +167,128 @@ threatfusion config-check
 ## 📊 Example Output
 
 ```
-================================================================================
-THREATFUSION ENRICHMENT REPORT
-================================================================================
+┌─────────────────────────────────────┐
+│  🔍 ThreatFusion Analysis           │
+├─────────────────────────────────────┤
+│ Indicator: 8.8.8.8                  │
+│ Type: ip_v4                         │
+└─────────────────────────────────────┘
 
-Indicator: d131dd02c5e6eec4693d61a8d9ca3759
-Analysis Time: 12.43s
+✓ Initialized 5 agents: VirusTotal, Shodan, Censys, OTX, AbuseIPDB
 
-RISK SCORE: 🔴 8.5/10 (CRITICAL)
-Confidence: 90%
+⠧ Querying 5 sources...
 
-RISK COMPONENTS:
-  • VirusTotal: 4.5/5 - 45/71 engines flagged as malicious
-  • OTX: 2.0/2 - 12 threat intelligence pulses
-  • AbuseIPDB: 0.8/1 - 80% abuse confidence
+╔══════════════════════════════════════╗
+║       RISK SCORE: 2.3 / 10.0        ║
+║        Severity: LOW 🟢             ║
+╚══════════════════════════════════════╝
 
-SOURCE RESULTS:
---------------------------------------------------------------------------------
-
-VirusTotal:
-  Detection Ratio: 45/71
-  Malware Names: Trojan.Win32.Emotet, W32/Emotet, TrojanDownloader:Win32/Emotet
-
-Shodan:
-  Country: Russian Federation
-  Organization: Hosting Provider LLC
-  Vulnerabilities: 3 found
-
-OTX:
-  Threat Pulses: 12
-  Has Threat Intel: Yes
-
-================================================================================
+Enrichment Results:
+├─ VirusTotal: Clean (0/92 detections)
+├─ Shodan: Google DNS, United States
+├─ AbuseIPDB: Confidence 0%, Not malicious
+└─ OTX: 3 pulses found
 ```
 
 ---
 
-## 🏗️ Architecture
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**❌ `externally-managed-environment` error**
+- **Solution**: Use `poetry install` instead of `pip install`
+
+**❌ `ModuleNotFoundError: No module named 'click'`**
+- **Solution**: Run `poetry install` first, then use `poetry run threatfusion`
+
+**❌ `ModuleNotFoundError: No module named 'src'`**
+- **Solution**: Always use `poetry run threatfusion` or `poetry run python -m src.main`
+
+**⚠️ Can't see `.env` file**
+- **Solution**: Use `ls -a` to show hidden files
+
+For more detailed troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+---
+
+## 📁 Project Structure
 
 ```
-ThreatFusion Architecture
-
-┌─────────────────────────────────────────────────────────────┐
-│                        CLI Interface                        │
-│                    (Click + Rich Console)                   │
-└─────────────────┬───────────────────────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────────────────────┐
-│                  Indicator Validator                        │
-│            (Regex-based type detection)                     │
-└─────────────────┬───────────────────────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────────────────────┐
-│              Enrichment Orchestrator                        │
-│           (ThreadPoolExecutor - Parallel)                   │
-└┬────────┬────────┬────────┬────────┬─────────────────────────┘
- │        │        │        │        │
- ▼        ▼        ▼        ▼        ▼
-[VT]   [Shodan] [Censys]  [OTX] [AbuseIPDB]
- │        │        │        │        │
- └────────┴────────┴────────┴────────┘
-                  │
-┌─────────────────▼───────────────────────────────────────────┐
-│                    Risk Scorer                              │
-│          (Weighted multi-source analysis)                   │
-└─────────────────┬───────────────────────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────────────────────┐
-│                 Report Generator                            │
-│              (Text / JSON / HTML)                           │
-└─────────────────────────────────────────────────────────────┘
+threatfusion/
+├── src/
+│   ├── agents/          # Threat intelligence agents
+│   ├── clients/         # HTTP clients with rate limiting
+│   ├── fusion/          # Orchestration and risk scoring
+│   ├── reporting/       # Report generators
+│   ├── config.py        # Configuration management
+│   ├── models.py        # Data models
+│   ├── validators.py    # Indicator validation
+│   └── main.py          # CLI entry point
+├── tests/               # Unit tests
+├── examples/            # Example queries
+├── .env.example         # Example configuration
+├── pyproject.toml       # Poetry dependencies
+├── README.md            # This file
+├── QUICKSTART.md        # Quick setup guide
+└── TROUBLESHOOTING.md   # Troubleshooting guide
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Development
+
+### Running Tests
 
 ```bash
-# Run tests
-poetry run pytest
-
-# With coverage
-poetry run pytest --cov=src tests/
-
-# Run specific test
-poetry run pytest tests/test_validators.py
+poetry run pytest tests/
 ```
 
----
+### Code Formatting
 
-## 🚀 Roadmap
+```bash
+poetry run black src/
+poetry run flake8 src/
+```
 
-- [ ] Additional agents (URLhaus, Talos Intelligence)
-- [ ] Caching layer (SQLite) to reduce API calls
-- [ ] Bulk analysis (CSV input)
-- [ ] PDF report generation
-- [ ] STIX 2.1 export format
-- [ ] Web dashboard (FastAPI + React)
+### Type Checking
 
----
-
-## ⚠️ Limitations
-
-**Current MVP limitations:**
-
-- **No caching**: Repeated queries re-fetch data (caching layer planned)
-- **Free tier limits**: API quotas apply (VirusTotal: 500/day, Shodan: 100/month)
-- **Basic normalization**: Different sources use different malware naming
-- **Single user**: Not optimized for concurrent multi-user scenarios
-
-These are acknowledged limitations of the MVP. Production enhancements are documented in the roadmap.
+```bash
+poetry run mypy src/
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! Please:
+Contributions are welcome! Please:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## ⚠️ Disclaimer
 
-- **VirusTotal** - File and URL analysis
-- **Shodan** - Infrastructure intelligence
-- **Censys** - Internet-wide scanning
-- **AlienVault OTX** - Community threat intelligence
-- **AbuseIPDB** - IP reputation
+ThreatFusion is provided for educational and research purposes. Always ensure you have permission to query and analyze indicators. Respect API rate limits and terms of service for all integrated threat intelligence platforms.
 
 ---
 
-## 📧 Contact
+## 🔗 Resources
 
-**Author**: Abhishek Reddy
-**Email**:hp2003r@gmail.com
-**GitHub**: [@lordprime](https://github.com/lordprime)
+- **Documentation**: [QUICKSTART.md](QUICKSTART.md)
+- **Troubleshooting**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **Issues**: [GitHub Issues](https://github.com/yourusername/threatfusion/issues)
 
 ---
 
-**Built with ❤️ for security analysts who deserve better tools**
+**Made with ❤️ by Security Researchers, for Security Researchers**
