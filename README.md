@@ -44,55 +44,37 @@ curl -sSL https://install.python-poetry.org | python3 -
 (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 ```
 
-Verify installation:
-```bash
-poetry --version
+### Verify installation:
+
+## 1. Clone the repo
+
 ```
-
-### Step 2: Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/threatfusion.git
+git clone https://github.com/lordprime/threatfusion.git
 cd threatfusion
 ```
-
-### Step 3: Install Dependencies
-
-```bash
-# Install all required packages
+## 2. Install Python dependencies
+```
 poetry install
-
-# This creates a virtual environment and installs:
-# - click (CLI framework)
-# - pydantic (data validation)
-# - requests (HTTP client)
-# - rich (terminal formatting)
-# - jinja2, weasyprint (report generation)
 ```
+## 3. Install Frontend dependencies
 
-> [!IMPORTANT]
-> **DO NOT** use `pip install -r requirements.txt` on Linux/WSL - you'll get an `externally-managed-environment` error. Always use `poetry install`.
-
-### Step 4: Configure API Keys
-
-```bash
-# Copy the example environment file
+```
+cd frontend
+npm install
+cd ..
+```
+## 4. Configure API keys
+```
 cp .env.example .env
-
-# Edit .env with your API keys
-nano .env  # or use any text editor
+nano .env  # Add your API keys
 ```
-
-Example `.env` configuration:
-```ini
-VT_API_KEY=your_virustotal_api_key_here
-SHODAN_API_KEY=your_shodan_api_key_here
-CENSYS_API_ID=your_censys_id_here
-CENSYS_API_SECRET=your_censys_secret_here
-OTX_API_KEY=your_otx_api_key_here
-ABUSEIPDB_API_KEY=your_abuseipdb_api_key_here
+# 5. Start both servers (in separate terminals)
 ```
-
+# Terminal 1:
+poetry run uvicorn api.main:app --reload --port 8000
+# Terminal 2:
+cd frontend && npm run deve
+```
 > [!TIP]
 > You only need **at least one** API key to get started. More keys = more comprehensive results.
 
